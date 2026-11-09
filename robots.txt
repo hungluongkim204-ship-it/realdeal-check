@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://realdealcheck.pages.dev/sitemap.xml
+Sitemap: https://hungluongkim204-ship-it.github.io/realdeal-check/sitemap.xml
