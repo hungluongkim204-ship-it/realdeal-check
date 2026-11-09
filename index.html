@@ -139,6 +139,8 @@ h2.sec{font-size:clamp(26px,3.6vw,38px)}
 .secsub{color:var(--muted);margin:-4px 0 18px;max-width:700px}
 footer{border-top:1.5px solid var(--ink);padding:26px 0 40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--muted)}
+.site-nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:13px}.site-nav a{text-decoration:none;color:#fff}.site-nav a:hover{color:var(--tag)}
+.guide-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px}.guide-card{background:#fff;border:1.5px solid var(--ink);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;align-items:flex-start}.guide-card h3{font-size:22px;margin:0 0 8px}.guide-card p{font-size:15px;color:#3a372f;margin:0 0 14px}.guide-card a{margin-top:auto;font-weight:700;text-decoration:none}.guide-card a:hover{text-decoration:underline}.footer-nav{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}.footer-nav a{font-weight:700;text-decoration:none}
 
 @media (max-width:820px){
   .panel{box-shadow:4px 4px 0 var(--ink)}
@@ -149,6 +151,7 @@ footer a{color:var(--muted)}
   .panel-b{grid-template-columns:1fr}
   .form{border-right:0;border-bottom:1.5px dashed var(--line)}
   .tricks{grid-template-columns:1fr}
+  .guide-grid{grid-template-columns:1fr}
   .facts{grid-template-columns:1fr 1fr}
 }
 </style>
@@ -157,7 +160,8 @@ footer a{color:var(--muted)}
 
 <div class="top">
   <div class="wrap">
-    <a class="logo" href="#check"><span class="chk">✓</span> RealDeal Check</a>
+    <a class="logo" href="index.html"><span class="chk">✓</span> RealDeal Check</a>
+    <nav class="site-nav" aria-label="Primary"><a href="guides/guide-best-day-to-buy-2026.html">Guides</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a></nav>
     <div class="count" id="countdown"></div>
   </div>
 </div>
@@ -270,6 +274,19 @@ footer a{color:var(--muted)}
   </div>
 </section>
 
+<section id="guides">
+  <div class="wrap">
+    <h2 class="sec">Guides for smarter sale shopping</h2>
+    <p class="secsub">Use the calendar, price-history tools, and a few simple checks to separate a real drop from a dressed-up normal price.</p>
+    <div class="guide-grid">
+      <article class="guide-card"><h3>Best day to buy in 2026</h3><p>Which categories tend to bottom out on Thanksgiving, Black Friday, or Cyber Monday — and when UK clearance takes over.</p><a href="guides/guide-best-day-to-buy-2026.html">Read the buying calendar →</a></article>
+      <article class="guide-card"><h3>UK vs US Black Friday</h3><p>The same event has different rhythms, protections, and post-Christmas opportunities on each side of the Atlantic.</p><a href="guides/guide-black-friday-uk-vs-us.html">Compare the two seasons →</a></article>
+      <article class="guide-card"><h3>Price-history tools</h3><p>How to use CamelCamelCamel, Keepa, Google Shopping, PriceSpy, PriceRunner, and idealo to find the real low.</p><a href="guides/guide-price-history-tools.html">Find the right tool →</a></article>
+      <article class="guide-card"><h3>Spot a fake discount</h3><p>A six-step method for inflated “was” prices, special model numbers, fake urgency, and padded bundles.</p><a href="guides/guide-spot-fake-discounts.html">Learn the six checks →</a></article>
+    </div>
+  </div>
+</section>
+
 <section id="faq">
   <div class="wrap">
     <h2 class="sec">FAQ</h2>
@@ -283,6 +300,7 @@ footer a{color:var(--muted)}
 
 <footer>
   <div class="wrap">
+    <nav class="footer-nav" aria-label="Footer"><a href="guides/guide-best-day-to-buy-2026.html">Guides</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a></nav>
     <p><b>Affiliate disclosure:</b> RealDeal Check participates in affiliate programs including the Amazon Services LLC Associates Program. As an Amazon Associate we earn from qualifying purchases. Als Amazon-Partner verdienen wir an qualifizierten Verkäufen. Verdicts are calculated from the numbers you enter and are guidance, not a guarantee.</p>
     <p>Data sources: BCG Year-End Sales Events Study 2026, Omni Calculator Black Friday Survey 2026, Which? Black Friday investigations, Adobe Digital Insights 2026 Holiday Forecast.</p>
     <p>© 2026 RealDeal Check · <a href="privacy.html">Privacy policy</a></p>
@@ -301,7 +319,7 @@ footer a{color:var(--muted)}
 /* ===== CONFIG: edit before deploying ===== */
 const CONFIG = {
   SITE_URL: "https://hungluongkim204-ship-it.github.io/realdeal-check",   // your deployed URL (used in share text)
-  AMAZON_TAG_US: "",   // e.g. "realdeal-20"  (Amazon Associates US tracking ID)
+  AMAZON_TAG_US: "realdealcheck-20",   // e.g. "realdeal-20"  (Amazon Associates US tracking ID)
   AMAZON_TAG_UK: "",   // e.g. "realdeal-21"  (Amazon Associates UK tracking ID)
   AMAZON_TAG_DE: "",   // e.g. "realdeal0b-21" (Amazon.de PartnerNet tracking ID, used in € mode)
 };
