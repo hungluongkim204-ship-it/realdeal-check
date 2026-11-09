@@ -121,6 +121,7 @@ th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font
 th{background:var(--ink);color:#fff;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
 tr:last-child td{border-bottom:0}
 td.pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:700}
+.phase-today td{background:var(--tag);font-weight:700}
 .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:700;background:var(--tag)}
 
 /* tricks */
@@ -165,8 +166,8 @@ footer a{color:var(--muted)}
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <h1>Is that Black Friday deal <em>actually real?</em></h1>
-        <p class="lead">Retailers inflate “was” prices so a normal price looks like a steal. Enter two numbers and get a straight verdict in 10 seconds: real deal, meh, or fake discount, plus the best day to buy.</p>
+        <h1 id="heroTitle">Is that Black Friday deal <em>actually real?</em></h1>
+        <p class="lead" id="heroSubtitle">Retailers inflate “was” prices so a normal price looks like a steal. Enter two numbers and get a straight verdict in 10 seconds: real deal, meh, or fake discount, plus the best day to buy.</p>
         <div class="ctas"><a class="btn" href="#check">Check a deal →</a>
         <a class="btn ghost" href="#tricks">See the 6 tricks</a></div>
       </div>
@@ -244,13 +245,13 @@ footer a{color:var(--muted)}
 
 <section id="bestday">
   <div class="wrap">
-    <h2 class="sec">Best day to buy, by category (2026)</h2>
+      <h2 class="sec">Best day to buy, by category (2026)</h2>
     <p class="secsub">From Adobe’s 2026 US holiday forecast, based on over 1 trillion retail site visits. Peak discount is off the listed price at the season’s deepest point.</p>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Category</th><th>Expected peak discount</th><th>Best day</th></tr></thead>
+       <thead><tr><th>Category</th><th>Best day to buy</th></tr></thead>
       <tbody id="bdt"></tbody>
     </table></div>
-    <p class="note" style="margin-top:8px">Source: <a href="https://news.adobe.com/news/2026/09/adobe-us-holiday-shopping-season-to-hit-record" target="_blank" rel="noopener">Adobe, Sept 28 2026</a>. Rows marked * are estimates from Adobe’s category data where no 2026 figure was published.</p>
+      <p class="note" id="bdnote" style="margin-top:8px">Source: <a href="https://news.adobe.com/news/2026/09/adobe-us-holiday-shopping-season-to-hit-record" target="_blank" rel="noopener">Adobe, Sept 28 2026</a>. Rows marked * are estimates from Adobe’s category data where no 2026 figure was published.</p>
   </div>
 </section>
 
@@ -312,6 +313,99 @@ const EVENTS = {
   cybermonday:  {name:"Cyber Monday", date:"2026-11-30"},
 };
 
+// One date-driven switch for the seasonal page. Dates are local calendar dates,
+// so a visitor in the US, UK, or DE does not get a UTC-shifted phase.
+const PHASES = [
+  {id:"bf-countdown", start:"2026-11-20", end:"2026-11-26",
+    title:"Is that Black Friday deal real? Find out in 10 seconds.",
+    subtitle:"The big day is coming. Most \"deals\" were cheaper earlier in the year — check before you buy.",
+    countdownTarget:"2026-11-27", countdownLabel:"Black Friday is", countdownSuffix:"— Nov 27, 2026",
+    bodyClass:"phase-bf-countdown", table:[
+      ["Electronics & computers", "Cyber Monday (Nov 30)"],
+      ["TVs, toys, apparel, appliances, furniture", "Black Friday (Nov 27)"],
+      ["Sporting goods", "Thanksgiving (Nov 26)"]
+    ]},
+  {id:"bf-week", start:"2026-11-27", end:"2026-11-29",
+    title:"It's Black Friday. Is that deal actually a discount?",
+    subtitle:"Ignore the crossed-out price. Compare against the 90-day low — it takes 10 seconds.",
+    countdownTarget:null, bodyClass:"phase-bf-week", table:[
+      ["Electronics & computers", "Cyber Monday (Nov 30)"],
+      ["TVs, toys, apparel, appliances, furniture", "Black Friday (Nov 27)"],
+      ["Sporting goods", "Thanksgiving (Nov 26)"]
+    ]},
+  {id:"cyber", start:"2026-11-30", end:"2026-12-06",
+    title:"Cyber Monday week: electronics hit their lows — if they're real.",
+    subtitle:"Adobe's 2026 forecast expects the deepest electronics and computer discounts on Cyber Monday. Verify the price history before you click buy.",
+    countdownTarget:null, bodyClass:"phase-cyber", highlightDate:"2026-11-30", table:[
+      ["Electronics & computers", "Cyber Monday (Nov 30)", true],
+      ["TVs, toys, apparel, appliances, furniture", "Black Friday (Nov 27)"],
+      ["Sporting goods", "Thanksgiving (Nov 26)"]
+    ]},
+  {id:"lull", start:"2026-12-07", end:"2026-12-13",
+    title:"Between the sales: quiet week, honest prices — mostly.",
+    subtitle:"Post-Cyber-Monday week is when retailers quietly raise prices \"before the next sale\". That crossed-out price still deserves a check.",
+    countdownTarget:"2026-12-14", countdownLabel:"Green Monday (last-chance online orders for Christmas) is",
+    bodyClass:"phase-lull", table:[
+      ["Green Monday", "Dec 14 · US/UK"],
+      ["Super Saturday", "Dec 19 · US/UK"],
+      ["Christmas Day", "Dec 25 · US/UK/DE"],
+      ["Boxing Day", "Dec 26 · UK; second Christmas day in parts of DE"]
+    ]},
+  {id:"green", start:"2026-12-14", end:"2026-12-18",
+    title:"Green Monday: your last realistic shot at pre-Christmas online deals.",
+    subtitle:"Retailers' own research coined \"Green Monday\" as the last Monday with at least 10 days before Christmas — historically one of December's biggest online shopping days. Check the 90-day low before gifting.",
+    countdownTarget:"2026-12-19", countdownLabel:"Super Saturday (in-store panic day) is",
+    bodyClass:"phase-green", note:"After this week, online ordering may miss Christmas delivery — always check the retailer's stated cut-off.", table:[
+      ["Toys, electronics & gift items", "Green Monday (Dec 14)"]
+    ]},
+  {id:"super", start:"2026-12-19", end:"2026-12-25",
+    title:"Super Saturday: last-minute gifts, last-second \"deals\".",
+    subtitle:"One-day sales flood stores and sites this week. Urgency is the trick — a countdown timer plus \"only 3 left\" is exactly when you should verify the price history.",
+    countdownTarget:"2026-12-25", countdownLabel:"Christmas is", bodyClass:"phase-super", table:[
+      ["Last-minute gifts", "Super Saturday (Dec 19)"],
+      ["Everything else", "Wait for Boxing Day / January sales"]
+    ]},
+  {id:"boxing", start:"2026-12-26", end:"2027-01-05",
+    title:"Boxing Day & after-Christmas sales: the UK's biggest discounts of the season.",
+    subtitle:"December 26 opens the UK's annual clearance season (and the second Christmas day across much of Europe). Clearance ≠ deal — some \"sale\" items were cheaper before Christmas.",
+    countdownTarget:null, bodyClass:"phase-boxing", table:[
+      ["UK & Ireland", "Boxing Day (Dec 26)"],
+      ["Germany", "Second Christmas day public holiday in many states; winter sales ramp up"]
+    ]},
+  {id:"jan-sales", start:"2027-01-06", end:"2027-01-15",
+    title:"January sales: quiet shelves, real markdowns — and some fake ones.",
+    subtitle:"Winter clearance runs through mid-January. The 90-day low test works year-round.",
+    countdownTarget:null, bodyClass:"phase-jan-sales", table:[
+      ["Winter clearance", "First two weeks of January (UK/DE)"],
+      ["Next big events", "Valentine's & spring sales (TBA)"]
+    ]},
+  {id:"evergreen", start:"2027-01-16", end:"2099-12-31",
+    title:"Is that deal real? Check in 10 seconds.",
+    subtitle:"Enter the \"was\" price, the sale price and the 90-day low. Get a verdict — any day of the year.",
+    countdownTarget:null, bodyClass:"phase-evergreen", showTable:false, table:[]},
+];
+
+function localISODate(d=new Date()){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
+function selectPhase(){
+  const requested = new URLSearchParams(window.location.search).get("phase");
+  const forced = PHASES.find(p=>p.id===requested);
+  if (forced) return forced;
+  const now = localISODate();
+  const scheduled = PHASES.find(p=>now>=p.start && now<=p.end);
+  if (scheduled) return scheduled;
+  // Before the published holiday window, retain the existing Black Friday
+  // acquisition page and its dated countdown; after it, use evergreen.
+  if (now < PHASES[0].start) return PHASES[0];
+  return PHASES.find(p=>p.id==="evergreen");
+}
+
+const ACTIVE_PHASE = selectPhase();
+window.REALDEAL_PHASE = ACTIVE_PHASE.id;
+
 // Adobe 2026 forecast: peak discount + best day. est=true where no 2026 figure was published.
 const CATS = [
   {id:"electronics", label:"Electronics (headphones, speakers, gadgets)", peak:30, best:"cybermonday"},
@@ -343,23 +437,36 @@ function dayOf(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1
 function daysUntil(s){ return Math.round((dayOf(s)-today())/86400000); }
 function prettyDate(s){ return dayOf(s).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}); }
 
+function renderPhase(){
+  document.body.className = ACTIVE_PHASE.bodyClass;
+  $("#heroTitle").textContent = ACTIVE_PHASE.title;
+  $("#heroSubtitle").textContent = ACTIVE_PHASE.subtitle;
+  const section = $("#bestday");
+  section.hidden = ACTIVE_PHASE.showTable === false;
+  $("#bdnote").innerHTML = ACTIVE_PHASE.note
+    ? ACTIVE_PHASE.note
+    : `Source: <a href="https://news.adobe.com/news/2026/09/adobe-us-holiday-shopping-season-to-hit-record" target="_blank" rel="noopener">Adobe, Sept 28 2026</a>. Rows marked * are estimates from Adobe’s category data where no 2026 figure was published.`;
+  $("#bdt").innerHTML = ACTIVE_PHASE.table.map(row=>{
+    const highlight = row[2] && ACTIVE_PHASE.highlightDate === localISODate();
+    const best = highlight ? "TODAY (Cyber Monday, Nov 30)" : row[1];
+    return `<tr${highlight?' class="phase-today"':''}><td>${row[0]}</td><td>${best}</td></tr>`;
+  }).join("");
+}
+
 // ---- countdown
 function renderCountdown(){
-  const bf = daysUntil(EVENTS.blackfriday.date), cm = daysUntil(EVENTS.cybermonday.date);
-  let h;
-  if (bf > 0) h = `<span>Black Friday in <b>${bf}d</b></span><span>Cyber Monday in <b>${cm}d</b></span>`;
-  else if (cm >= 0) h = `<span><b>Cyber Week is live</b> · check before you buy</span>`;
-  else h = `<span>Holiday sales season · <b>check before you buy</b></span>`;
-  $("#countdown").innerHTML = h;
+  const el = $("#countdown");
+  if (!ACTIVE_PHASE.countdownTarget) { el.hidden = true; el.textContent = ""; return; }
+  const n = Math.max(0, daysUntil(ACTIVE_PHASE.countdownTarget));
+  el.hidden = false;
+  el.innerHTML = `<span>${ACTIVE_PHASE.countdownLabel} <b>${n}</b> days away${ACTIVE_PHASE.countdownSuffix ? ` ${ACTIVE_PHASE.countdownSuffix}` : ""}</span>`;
 }
 
 // ---- build form
 function build(){
+  renderPhase();
   $("#cat").innerHTML = CATS.map(c=>`<option value="${c.id}">${c.label}</option>`).join("");
   $("#flags").innerHTML = FLAGS.map(f=>`<label class="flag"><input type="checkbox" value="${f.id}"> <span>${f.text}</span></label>`).join("");
-  $("#bdt").innerHTML = CATS.filter(c=>c.id!=="other").map(c=>
-    `<tr><td>${c.label}</td><td class="pct">up to ${c.peak}%${c.est?"*":""}</td><td><span class="pill">${EVENTS[c.best].name}</span> <span class="note">${prettyDate(EVENTS[c.best].date)}</span></td></tr>`
-  ).join("");
   document.querySelectorAll("#cur button").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#cur button").forEach(x=>x.classList.remove("on"));
     b.classList.add("on"); CUR=b.dataset.c;
